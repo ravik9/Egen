@@ -11,6 +11,12 @@ namespace EgenOrderingSystem.API.Services
         IEnumerable<OrderItems> GetOrderItems(int orderID);
 
         OrderItems GetOrderItem(int orderItemId);
-        void UpdateOrderItem(int orderItemId);
+        void UpdateOrderItem(OrderItems orderItem);
+        void AddOrderItem(int orderId, OrderItems orderItem);
+        void Save();
+        void CreateOrderItem(OrderItems entity);
+        OrderItems GetItem(int orderId, int itemId);
+        void DeleteItem(OrderItems orderItem);
+
     }
 }

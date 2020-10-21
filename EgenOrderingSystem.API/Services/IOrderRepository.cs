@@ -15,6 +15,7 @@ namespace EgenOrderingSystem.API.Services
         bool OrderExists(int orderId);
         IEnumerable<OrderItems> GetOrderItems(int orderId);
         OrderItems GetOrderItem(int orderId, int ItemId);
-
+        void AddOrder(Order order);
+        void Save();
     }
 }

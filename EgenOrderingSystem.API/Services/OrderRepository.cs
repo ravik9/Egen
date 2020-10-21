@@ -1,24 +1,19 @@
-﻿using System;
+﻿using EgenOrderingSystem.API.DBContext;
+using EgenOrderingSystem.API.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using EgenOrderingSystem.API.DBContext;
-using EgenOrderingSystem.API.Entities;
 
 namespace EgenOrderingSystem.API.Services
 {
-    public class OrderRepository : IOrderRepository,IDisposable
+    public class OrderRepository : IOrderRepository
     {
         private readonly OrderSystemContext _orderSystemContext;
         public OrderRepository(OrderSystemContext orderSystemContext)
         {
             _orderSystemContext = orderSystemContext;
         }
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+
 
         public Order GetOrder(int orderId)
         {
@@ -48,12 +43,20 @@ namespace EgenOrderingSystem.API.Services
         {
             throw new NotImplementedException();
         }
-        protected virtual void Dispose(bool disposing)
+
+        public void AddOrder(Order order)
         {
-            if (disposing)
+            if(order == null)
             {
-                // dispose resources when needed
+                throw new ArgumentNullException(nameof(order));
             }
+
+            _orderSystemContext.Orders.Add(order);
+
+        }
+        public void Save()
+        {
+            _orderSystemContext.SaveChanges();
         }
     }
 }

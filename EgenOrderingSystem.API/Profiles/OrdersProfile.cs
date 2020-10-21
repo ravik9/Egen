@@ -15,6 +15,8 @@ namespace EgenOrderingSystem.API.Profiles
                 .ForMember(
                 dest => dest.Age,
                 opt => opt.MapFrom(src => src.OrderDate.CurrentAge()));
+            CreateMap<Entities.Order, Models.OrderDto>();
+            CreateMap<Models.OrderDtoToInsert, Entities.Order>();
         }
     }
 }

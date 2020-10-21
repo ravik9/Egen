@@ -14,6 +14,6 @@ namespace EgenOrderingSystem.API.Entities
         public Order Order { get; set; }
         public int OrderId { get; set; }
         public int ProductsId { get; set; }
-        public Products Products { get; set; }
+       // public Products Products { get; set; }
     }
 }

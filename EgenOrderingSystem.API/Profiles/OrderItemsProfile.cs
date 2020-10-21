@@ -10,7 +10,11 @@ namespace EgenOrderingSystem.API.Profiles
     {
         public OrderItemsProfile()
         {
-            CreateMap<Entities.OrderItems, Models.OrderItemDto>();
+            CreateMap<Entities.OrderItems, Models.OrderItemDto>().ReverseMap();
+            CreateMap<Models.OrderItemsToInsert, Entities.OrderItems>();
+            CreateMap<Models.ItemForUpdateDto, Entities.OrderItems>().ReverseMap();
+
+            
         }
     }
 }

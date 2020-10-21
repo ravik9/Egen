@@ -2,6 +2,7 @@
 using EgenOrderingSystem.API.DBContext;
 using EgenOrderingSystem.API.Models;
 using EgenOrderingSystem.API.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace EgenOrderingSystem.API.Controllers
 
             return Ok(_mapper.Map<IEnumerable<OrderDto>>(ordersFromRepo));
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name="GetOrder")]
         public IActionResult GetOrderByID(int id)
         {
             var ordersFromRepo = _orderRepository.GetOrder(id);
@@ -40,5 +41,27 @@ namespace EgenOrderingSystem.API.Controllers
             }
             return Ok(ordersFromRepo);
         }
+        [HttpPost]
+        public IActionResult CreateOrder(OrderDtoToInsert orderDtoToInsert)
+        {
+            var orderEntity = _mapper.Map<Entities.Order>(orderDtoToInsert);
+            _orderRepository.AddOrder(orderEntity);
+            _orderRepository.Save();
+            var orderToReturn = _mapper.Map<Models.OrderDto>(orderEntity);
+            return CreatedAtRoute("GetOrder", new {orderId= orderToReturn.Id }, orderToReturn);
+        }
+
+        [HttpPost("orderscollection")]
+        public IActionResult CreateOrderCollection(IEnumerable<OrderDtoToInsert> orderDtoCollectionToInsert)
+        {
+            foreach(var orderDtoToInsert in orderDtoCollectionToInsert)
+            {
+                var orderEntity = _mapper.Map<Entities.Order>(orderDtoToInsert);
+                _orderRepository.AddOrder(orderEntity);
+            }
+            _orderRepository.Save();
+            return Ok();
+        }
+
     }
 }
