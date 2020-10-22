@@ -26,27 +26,27 @@ namespace EgenOrderingSystem.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<OrderItemDto>> getOrderItems(int orderId)
+        public async Task<ActionResult<IEnumerable<OrderItemDto>>> getOrderItems(int orderId)
         {
             if(!_orderRepository.OrderExists(orderId))
             {
                 return NotFound();
 
             }
-            var orderItemsFromEntity = _orderRepository.GetOrderItems(orderId);
+            var orderItemsFromEntity = await _orderRepository.GetOrderItemsAsync(orderId);
             return Ok(_mapper.Map<IEnumerable<OrderItemDto>>(orderItemsFromEntity));
 
         }
 
         [HttpGet("{itemId}", Name ="GetOrderItem" )]
-        public ActionResult<OrderItemDto> getOrderItem(int orderId, int itemId)
+        public async Task<ActionResult<OrderItemDto>> getOrderItem(int orderId, int itemId)
         {
             if (!_orderRepository.OrderExists(orderId))
             {
                 return NotFound();
 
             }
-            var orderItemsFromEntity = _orderRepository.GetOrderItem(orderId, itemId);
+            var orderItemsFromEntity = await _orderRepository.GetOrderItemAsync(orderId, itemId);
             if(orderItemsFromEntity == null)
             {
                 return NotFound();
@@ -56,7 +56,7 @@ namespace EgenOrderingSystem.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateOrderItem(int orderId, OrderItemsToInsert orderItemToInsert)
+        public async Task<IActionResult> CreateOrderItem(int orderId, OrderItemsToInsert orderItemToInsert)
         {
             if (!_orderRepository.OrderExists(orderId))
             {
@@ -65,20 +65,20 @@ namespace EgenOrderingSystem.API.Controllers
             var orderItemEntity = _mapper.Map<Entities.OrderItems>(orderItemToInsert);
             //orderItemEntity.OrderId = orderId;
             _orderItemsRepository.AddOrderItem(orderId, orderItemEntity);
-            _orderItemsRepository.Save();
+            await _orderItemsRepository.SaveAsync();
             var orderItemToReturn = _mapper.Map<Models.OrderItemDto>(orderItemEntity);
             return Ok();
         }
 
         [HttpPatch("{itemId}")]
-        public ActionResult PartiallyUpdateItemForOrder(int orderId, int itemId, JsonPatchDocument<ItemForUpdateDto> patchDocument)
+        public async Task<ActionResult> PartiallyUpdateItemForOrder(int orderId, int itemId, JsonPatchDocument<ItemForUpdateDto> patchDocument)
         {
             if (!_orderRepository.OrderExists(orderId))
             {
                 return NotFound();
             }
 
-            var ItemForOrderFromRepo = _orderItemsRepository.GetItem(orderId, itemId);
+            var ItemForOrderFromRepo = await _orderItemsRepository.GetItemAsync(orderId, itemId);
 
             if (ItemForOrderFromRepo == null)
             {
@@ -94,7 +94,7 @@ namespace EgenOrderingSystem.API.Controllers
                 itemToAdd.Id = itemId;
 
                 _orderItemsRepository.AddOrderItem(orderId, itemToAdd);
-                _orderItemsRepository.Save();
+                await _orderItemsRepository.SaveAsync();
 
                 var courseToReturn = _mapper.Map<OrderItemDto>(itemToAdd);
                 return StatusCode(201);
@@ -114,13 +114,13 @@ namespace EgenOrderingSystem.API.Controllers
 
             _orderItemsRepository.UpdateOrderItem(ItemForOrderFromRepo);
 
-            _orderItemsRepository.Save();
+            await _orderItemsRepository.SaveAsync();
 
             return NoContent();
         }
 
         [HttpPost("ordersitemscollection")]
-        public IActionResult CreateOrderItemsCollection(int orderId, IEnumerable<OrderItemsToInsert> orderItemsCollectionToInsertUpdate)
+        public async Task<IActionResult> CreateOrderItemsCollection(int orderId, IEnumerable<OrderItemsToInsert> orderItemsCollectionToInsertUpdate)
         {
             if (!_orderRepository.OrderExists(orderId))
             {
@@ -131,12 +131,12 @@ namespace EgenOrderingSystem.API.Controllers
             {
                 _orderItemsRepository.CreateOrderItem(_mapper.Map<Entities.OrderItems>(OrderItemToInsertUpdate));
             }
-            _orderRepository.Save();
+            await _orderRepository.SaveAsync();
             return StatusCode(201);
         }
 
         [HttpDelete("{itemId}")]
-        public ActionResult DeleteCourseForAuthor(int orderId, int itemId)
+        public async Task<ActionResult> DeleteCourseForAuthor(int orderId, int itemId)
         {
             if (!_orderRepository.OrderExists(orderId))
             {
@@ -144,7 +144,7 @@ namespace EgenOrderingSystem.API.Controllers
             }
 
 
-            var itemForOrderFromRepo = _orderItemsRepository.GetItem(orderId, itemId);
+            var itemForOrderFromRepo = await _orderItemsRepository.GetItemAsync(orderId, itemId);
 
             if (itemForOrderFromRepo == null)
             {
@@ -152,7 +152,7 @@ namespace EgenOrderingSystem.API.Controllers
             }
 
             _orderItemsRepository.DeleteItem(itemForOrderFromRepo);
-            _orderItemsRepository.Save();
+            await _orderItemsRepository.SaveAsync();
 
             return NoContent();
         }

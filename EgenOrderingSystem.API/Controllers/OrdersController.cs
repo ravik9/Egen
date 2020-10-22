@@ -25,16 +25,16 @@ namespace EgenOrderingSystem.API.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<OrderDto>> GetOrders()
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
         {
-            var ordersFromRepo = _orderRepository.GetOrders();
+            var ordersFromRepo = await _orderRepository.GetOrdersAsync();
 
             return Ok(_mapper.Map<IEnumerable<OrderDto>>(ordersFromRepo));
         }
         [HttpGet("{id}", Name="GetOrder")]
-        public IActionResult GetOrderByID(int id)
+        public async Task<IActionResult> GetOrderByID(int id)
         {
-            var ordersFromRepo = _orderRepository.GetOrder(id);
+            var ordersFromRepo = await _orderRepository.GetOrderAsync(id);
             if(ordersFromRepo == null)
             {
                 return NotFound();
@@ -42,24 +42,24 @@ namespace EgenOrderingSystem.API.Controllers
             return Ok(ordersFromRepo);
         }
         [HttpPost]
-        public IActionResult CreateOrder(OrderDtoToInsert orderDtoToInsert)
+        public async Task<IActionResult> CreateOrder(OrderDtoToInsert orderDtoToInsert)
         {
             var orderEntity = _mapper.Map<Entities.Order>(orderDtoToInsert);
             _orderRepository.AddOrder(orderEntity);
-            _orderRepository.Save();
+            await _orderRepository.SaveAsync();
             var orderToReturn = _mapper.Map<Models.OrderDto>(orderEntity);
             return CreatedAtRoute("GetOrder", new {orderId= orderToReturn.Id }, orderToReturn);
         }
 
         [HttpPost("orderscollection")]
-        public IActionResult CreateOrderCollection(IEnumerable<OrderDtoToInsert> orderDtoCollectionToInsert)
+        public async Task<IActionResult> CreateOrderCollection(IEnumerable<OrderDtoToInsert> orderDtoCollectionToInsert)
         {
             foreach(var orderDtoToInsert in orderDtoCollectionToInsert)
             {
                 var orderEntity = _mapper.Map<Entities.Order>(orderDtoToInsert);
                 _orderRepository.AddOrder(orderEntity);
             }
-            _orderRepository.Save();
+            await _orderRepository.SaveAsync();
             return Ok();
         }
 

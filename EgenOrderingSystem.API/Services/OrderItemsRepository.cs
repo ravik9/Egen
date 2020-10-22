@@ -16,13 +16,13 @@ namespace EgenOrderingSystem.API.Services
         {
             _orderSystemContext = orderSystemContext;
         }
-        public OrderItems GetOrderItem(int orderItemId)
+        public async Task<OrderItems> GetOrderItemAsync(int orderItemId)
         {
-            throw new NotImplementedException();
+            return await _orderSystemContext.OrderItems.Where(x => x.Id == orderItemId).SingleOrDefaultAsync();
         }
-        public IEnumerable<OrderItems> GetOrderItems(int orderID)
+        public async Task<IEnumerable<OrderItems>> GetOrderItemsAsync(int orderID)
         {
-            return _orderSystemContext.OrderItems.Where(x => x.OrderId == orderID);
+            return await _orderSystemContext.OrderItems.Where(x => x.OrderId == orderID).ToListAsync();
         }
         public void AddOrderItem(int orderID, OrderItems orderItem)
         {
@@ -35,9 +35,9 @@ namespace EgenOrderingSystem.API.Services
 
         }
 
-        public void Save()
+        public async Task<bool> SaveAsync()
         {
-            _orderSystemContext.SaveChanges();
+            return await _orderSystemContext.SaveChangesAsync() > 0;
         }
         public void UpdateOrderItem(OrderItems orderItem)
         {
@@ -48,7 +48,7 @@ namespace EgenOrderingSystem.API.Services
         {
             _orderSystemContext.OrderItems.Add(orderItem);
         }
-        public OrderItems GetItem(int orderId, int itemId)
+        public async Task<OrderItems> GetItemAsync(int orderId, int itemId)
         {
             var res = _orderSystemContext.Orders.Where(x => x.Id == orderId).Include(y => y.OrderItems).FirstOrDefault();
             var item = res.OrderItems.Where(x => x.Id == itemId).FirstOrDefault();

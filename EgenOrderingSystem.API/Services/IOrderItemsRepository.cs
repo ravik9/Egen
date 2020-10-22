@@ -8,14 +8,14 @@ namespace EgenOrderingSystem.API.Services
 {
     public interface IOrderItemsRepository
     {
-        IEnumerable<OrderItems> GetOrderItems(int orderID);
+        Task<IEnumerable<OrderItems>> GetOrderItemsAsync(int orderID);
 
-        OrderItems GetOrderItem(int orderItemId);
+        Task<OrderItems> GetOrderItemAsync(int orderItemId);
         void UpdateOrderItem(OrderItems orderItem);
         void AddOrderItem(int orderId, OrderItems orderItem);
-        void Save();
+        Task<bool> SaveAsync();
         void CreateOrderItem(OrderItems entity);
-        OrderItems GetItem(int orderId, int itemId);
+        Task<OrderItems> GetItemAsync(int orderId, int itemId);
         void DeleteItem(OrderItems orderItem);
 
     }
